@@ -6,6 +6,7 @@ use App\Http\Requests\NewCustomerRequest;
 use App\Repositories\Eloquent\CustomerRepository;
 use Hash;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 
 class RegisterController extends BaseController
 {
@@ -24,7 +25,7 @@ class RegisterController extends BaseController
         }
 
         return $this->sendResponse([
-            'access_token' => $customer->createToken('API_TOKEN')->plainTextToken,
-        ], 'Customer created.');
+            'token' => $customer->createToken('API_TOKEN')->plainTextToken,
+        ], 'Customer created.', statusCode: Response::HTTP_CREATED);
     }
 }
