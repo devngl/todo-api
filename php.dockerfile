@@ -10,4 +10,8 @@ RUN chown laravel:laravel /var/www/html
 
 WORKDIR /var/www/html
 
+RUN mkdir -p /usr/src/php/ext/redis; \
+	curl -fsSL https://pecl.php.net/get/redis --ipv4 | tar xvz -C "/usr/src/php/ext/redis" --strip 1; \
+	docker-php-ext-install redis;
+
 RUN docker-php-ext-install pdo pdo_mysql
