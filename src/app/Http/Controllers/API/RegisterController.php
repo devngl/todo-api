@@ -2,33 +2,29 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\Customer;
+use App\Http\Requests\NewCustomerRequest;
+use App\Repositories\Eloquent\CustomerRepository;
 use Hash;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Throwable;
 
 class RegisterController extends BaseController
 {
-    /**
-     * @throws Throwable
-     */
-    public function __invoke(Request $request): JsonResponse
+    public function __construct(private CustomerRepository $repository) { }
+
+    public function __invoke(NewCustomerRequest $request): JsonResponse
     {
-        $validatedData = $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'string', 'email', 'unique:customers,email'],
-            'password' => ['required', 'string', 'min:5', 'confirmed'],
+        $customer = $this->repository->create([
+            'name'     => $request['name'],
+            'email'    => $request['email'],
+            'password' => Hash::make($request['password']),
         ]);
 
-        $customer = Customer::create([
-            'name'     => $validatedData['name'],
-            'email'    => $validatedData['email'],
-            'password' => Hash::make($validatedData['password']),
-        ]);
+        if (!$customer) {
+            return $this->sendError(null, statusCode: 500);
+        }
 
         return $this->sendResponse([
             'access_token' => $customer->createToken('API_TOKEN')->plainTextToken,
-        ]);
+        ], 'Customer created.');
     }
 }
