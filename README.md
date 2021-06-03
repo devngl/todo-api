@@ -14,6 +14,7 @@ After that completes, follow the steps from the [src/README.md](src/README.md) f
 Bringing up the Docker Compose network with `site` instead of just using `up`, ensures that only our site's containers are brought up at the start, instead of all of the command containers as well. The following are built for our web server, with their exposed ports detailed:
 
 - **nginx** - `:80`
+- **nginx** - `:443`
 - **mysql** - `:3306`
 - **php** - `:9000`
 - **redis** - `:6379`
@@ -24,6 +25,19 @@ Three additional containers are included that handle Composer, NPM, and Artisan 
 - `docker-compose run --rm composer update`
 - `docker-compose run --rm npm run dev`
 - `docker-compose run --rm artisan migrate` 
+
+## Creating certificate files for SSL
+
+If you want to use SSL you will need to generate your own certificates using `mkcert`. To do so first install it using the next GitHub repository: https://github.com/FiloSottile/mkcert
+
+Once it's installed perform the next commands to generate the key pair:
+
+```bash
+cd {project_root}/nginx/ssl
+mkcert -key-file key.pem -cert-file cert.pem todo.test "*.todo.test"
+```
+
+Finally, rebuild the ``site`` container: ``docker compose up -d --build site ``. Now you should be able to open https://todo.test and consume the API from https://api.todo.test. **Remember to add these domains to you hosts file**.
 
 ## Persistent MySQL Storage
 

@@ -1,5 +1,9 @@
 FROM nginx:stable-alpine
 
+RUN mkdir -p /etc/nginx/certificates
+
+COPY ./nginx/ssl /etc/nginx/certificates
+
 ADD ./nginx/nginx.conf /etc/nginx/
 ADD ./nginx/default.conf /etc/nginx/conf.d/
 
